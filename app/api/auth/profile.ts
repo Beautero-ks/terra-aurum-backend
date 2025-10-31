@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import jwt from 'jsonwebtoken'
 import applyCors from '../utils/cors'
-import prisma from '../../../../prisma/client'
+import prisma from '../../../prisma/client'
 
 const SECRET = process.env.JWT_SECRET || 'dev-secret'
 

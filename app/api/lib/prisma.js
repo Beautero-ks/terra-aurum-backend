@@ -1,6 +1,6 @@
 // lib/prisma.js
 // Import the generated Prisma client directly (generator outputs to ../generated/prisma)
-import { PrismaClient } from "../../../generated/prisma";
+import { PrismaClient } from "../../generated/prisma";
 
 const globalForPrisma = globalThis;
 

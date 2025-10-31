@@ -1,4 +1,4 @@
-import prisma from "../../../../prisma/client";
+import prisma from "../../../prisma/client";
 
 export async function GET() {
   const users = await prisma.user.findMany();
