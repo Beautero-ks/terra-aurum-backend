@@ -35,5 +35,8 @@ model Order {
   userId    Int
   items     Json
   total     Float
+  orderNumber String   @unique
+  status    String    @default("pending")
+  trackingNumber String?
   createdAt DateTime  @default(now())
 }
