@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     const where = q ? { OR: [{ orderNumber: { contains: q } }, { status: { contains: q } }] } : undefined
     const skip = (page - 1) * limit
     const [orders, total] = await Promise.all([
-      prisma.order.findMany({ where, orderBy: { createdAt: 'desc' }, skip, take: limit }),
+      prisma.order.findMany({ where, orderBy: { createdAt: 'desc' }, skip, take: limit, include: { user: { select: { id: true, email: true, fullName: true } }, items: true } }),
       prisma.order.count({ where })
     ])
     return NextResponse.json({ orders, meta: { page, limit, total } }, { status: 200, headers: corsHeaders(request) })

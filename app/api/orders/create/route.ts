@@ -37,23 +37,43 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { items, total, userEmail: bodyEmail } = body || {}
-    let userEmail: string | null = null
-    userEmail = bodyEmail || null
+  const { items, total, userEmail: bodyEmail, paymentMethod } = body || {}
+    const userEmail: string | null = bodyEmail || null
 
-    if (!items || typeof total !== 'number') {
-      return NextResponse.json({ error: 'Invalid payload' }, { status: 400, headers: corsHeaders(request) })
+    // validate payload shape
+    if (!Array.isArray(items) || items.length === 0) {
+      return NextResponse.json({ error: 'Invalid payload: items must be a non-empty array' }, { status: 400, headers: corsHeaders(request) })
+    }
+    const totalNum = Number(total)
+    if (Number.isNaN(totalNum) || totalNum < 0) {
+      return NextResponse.json({ error: 'Invalid payload: total must be a number' }, { status: 400, headers: corsHeaders(request) })
     }
 
     const orderNumber = genOrderNumber()
 
+    // Build nested create items for Prisma OrderItem relation
+    const itemsForCreate = items.map((it: any) => {
+      const productId = Number(it.id ?? it.productId)
+      const quantity = Number(it.quantity ?? 1)
+      const price = Number(it.price ?? 0)
+      if (Number.isNaN(productId) || Number.isNaN(quantity) || Number.isNaN(price)) {
+        throw new Error('Invalid item data')
+      }
+      return {
+        product: { connect: { id: productId } },
+        quantity,
+        price
+      }
+    })
+
     const created = await prisma.order.create({
       data: {
-        userId: userId ?? undefined,
-        items,
-        total,
-        orderNumber
-      }
+        userId: Number(userId),
+        total: totalNum,
+        orderNumber,
+        items: { create: itemsForCreate }
+      },
+      include: { items: true }
     })
 
     const payloadForMail = {
@@ -63,6 +83,7 @@ export async function POST(request: Request) {
       userEmail: userEmail,
       total: created.total,
       items,
+      paymentMethod: paymentMethod || null,
       date: created.createdAt.toISOString()
     }
 

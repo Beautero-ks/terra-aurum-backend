@@ -23,7 +23,7 @@ export async function sendAdminMail(order: any) {
     from: process.env.ADMIN_EMAIL,
     to: process.env.ADMIN_EMAIL,
     subject: `Nouvelle commande ${order.orderNumber || order.id}`,
-    text: `Nouvelle commande reçue :\n\nCommande : ${order.orderNumber || order.id}\nUtilisateur : ${order.userEmail || 'N/A'}\nTotal : ${order.total} €\nNombre d'articles : ${Array.isArray(order.items) ? order.items.length : '-'}\nDate : ${order.date}\n\nArticles:\n${itemsSummary}\n\n--\nVoir le panneau d'administration pour plus de détails.`
+    text: `Nouvelle commande reçue :\n\nCommande : ${order.orderNumber || order.id}\nUtilisateur : ${order.userEmail || 'N/A'}\nTotal : ${order.total} $\nMode de paiement : ${order.paymentMethod || 'N/A'}\nNombre d'articles : ${Array.isArray(order.items) ? order.items.length : '-'}\nDate : ${order.date}\n\nArticles:\n${itemsSummary}\n\n--\nVoir le panneau d'administration pour plus de détails.`
   }
 
   await transporter.sendMail(mailOptions)

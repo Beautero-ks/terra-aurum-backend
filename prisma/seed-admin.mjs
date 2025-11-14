@@ -8,7 +8,7 @@ async function main() {
     console.warn('Seeding admin in production is not recommended.')
   }
 
-  const email = 'terra-aurum@gmail.com'
+  const email = 'terraaurum@gmail.com'
   const password = 'Terra-aurum&'
 
   const existing = await prisma.user.findUnique({ where: { email } })

@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../app/generated/prisma"
@@ -14,58 +8,53 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id          Int       @id @default(autoincrement())
-  fullName    String
-  email       String    @unique
-  password    String
-  role        String    @default("user")
-  phone       String?
-  address     String?
-  city        String?
-  postalCode  String?
-  orders      Order[]
-  createdAt   DateTime  @default(now())
+  id         Int      @id @default(autoincrement())
+  fullName   String
+  email      String   @unique
+  password   String
+  role       String   @default("user")
+  createdAt  DateTime @default(now())
+  address    String?
+  city       String?
+  phone      String?
+  postalCode String?
+  orders     Order[]
 }
 
 model Order {
-  id             Int          @id @default(autoincrement())
-  user           User         @relation(fields: [userId], references: [id])
+  id             Int         @id @default(autoincrement())
   userId         Int
-  orderNumber    String       @unique
   total          Float
-  status         String       @default("pending")
+  createdAt      DateTime    @default(now())
+  orderNumber    String      @unique
+  status         String      @default("pending")
   trackingNumber String?
-  createdAt      DateTime     @default(now())
-
-  // Relation avec les produits de la commande
+  user           User        @relation(fields: [userId], references: [id])
   items          OrderItem[]
 }
 
 model OrderItem {
-  id         Int      @id @default(autoincrement())
-  quantity   Int      @default(1)
-  price      Float
-  product    Product  @relation(fields: [productId], references: [id])
-  productId  Int
-  order      Order    @relation(fields: [orderId], references: [id])
-  orderId    Int
+  id        Int     @id @default(autoincrement())
+  quantity  Int     @default(1)
+  price     Float
+  productId Int
+  orderId   Int
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
 }
 
 model Product {
-  id             Int       @id @default(autoincrement())
+  id             Int         @id @default(autoincrement())
   name           String
   description    String?
   price          Float
   weight         String?
   image          String?
   category       String?
-  inStock        Boolean    @default(true)
+  inStock        Boolean     @default(true)
   specifications Json?
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
-
-  // Relation avec les commandes via OrderItem
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
   orderItems     OrderItem[]
 }

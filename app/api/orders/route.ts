@@ -22,8 +22,36 @@ export async function GET(request: Request) {
     const token = auth.split(' ')[1]
     const decoded: any = jwt.verify(token, SECRET)
     const userId = Number(decoded.id)
-    const orders = await prisma.order.findMany({ where: { userId }, orderBy: { createdAt: 'desc' } })
-    return NextResponse.json({ orders }, { status: 200, headers: corsHeaders(request) })
+    // include related items and product data so frontend can render order details
+    const orders = await prisma.order.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        items: {
+          include: { product: true }
+        }
+      }
+    })
+
+    // normalize orders to the shape expected by the frontend
+    const normalized = orders.map(o => ({
+      id: o.id,
+      orderNumber: o.orderNumber,
+      total: o.total,
+      status: o.status,
+      trackingNumber: o.trackingNumber || null,
+      date: o.createdAt,
+      items: (o.items || []).map(it => ({
+        id: it.id,
+        productId: it.productId,
+        name: it.product?.name || null,
+        image: it.product?.image || null,
+        price: it.price,
+        quantity: it.quantity
+      }))
+    }))
+
+    return NextResponse.json({ orders: normalized }, { status: 200, headers: corsHeaders(request) })
   } catch (err) {
     console.error('GET /api/orders error', err)
     return NextResponse.json({ message: 'Invalid token or server error' }, { status: 401, headers: corsHeaders(request) })
