@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     await prisma.$disconnect()
     return NextResponse.json({ ok: true, result }, { status: 200, headers: corsHeaders(request) })
   } catch (err: unknown) {
-    console.error('Health check failed', err)
+    
     let message = 'DB connection failed'
     if (err instanceof Error) message = err.message
     return NextResponse.json({ ok: false, message }, { status: 500, headers: corsHeaders(request) })

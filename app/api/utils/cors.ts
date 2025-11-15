@@ -2,7 +2,7 @@ import Cors from 'cors'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 const cors = Cors({
-  origin: ['http://localhost:5173'], // ton frontend en dev
+  origin: ['https://terra-aurum.com'], // ton frontend en dev
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 })

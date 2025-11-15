@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server'
 import { prisma } from '../lib/prisma.js'
 import jwt from 'jsonwebtoken'
 
-const SECRET = process.env.JWT_SECRET || 'dev-secret'
-const ALLOWED_ORIGIN = process.env.NEXT_PUBLIC_ALLOWED_ORIGIN || 'http://localhost:5173'
+const SECRET = process.env.JWT_SECRET || '8e012340284be0f75d6e14bf068c06b6'
+const ALLOWED_ORIGIN = process.env.NEXT_PUBLIC_ALLOWED_ORIGIN || 'https://terra-aurum.com'
 
 function corsHeaders(request: Request) {
   const origin = request.headers.get('origin') || ALLOWED_ORIGIN

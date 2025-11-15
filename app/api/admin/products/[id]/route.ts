@@ -1,12 +1,12 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '../../../lib/prisma.js'
 import type { Prisma } from '../../../../generated/prisma'
 import { corsHeaders, verifyAdmin } from '../../_helpers'
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, context: { params: { id: string } }) {
   try {
     await verifyAdmin(request)
-    let id = Number(params.id)
+    let {id} = context.params
     // If params.id is not provided (hot reloads or mismatch), try to parse from URL path
     if (Number.isNaN(id)) {
       try {

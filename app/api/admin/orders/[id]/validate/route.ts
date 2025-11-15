@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '../../../../lib/prisma.js'
 import { corsHeaders, verifyAdmin } from '../../../_helpers'
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, context: { params: { id: string } }) {
   try {
     await verifyAdmin(request)
-    let id = Number(params.id)
+    let {id} = context.params
     if (Number.isNaN(id)) {
       try {
         const u = new URL(request.url)

@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '../../../lib/prisma.js'
 import { corsHeaders, verifyAdmin } from '../../_helpers'
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, context: { params: { id: string } }) {
   try {
     await verifyAdmin(request)
-    const id = Number(params.id)
+    const {id} = context.params
     const body = await request.json()
     // allow updating role and fullName (careful with password changes)
     const allowed: any = {}

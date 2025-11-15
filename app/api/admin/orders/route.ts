@@ -17,7 +17,7 @@ export async function GET(request: Request) {
     ])
     return NextResponse.json({ orders, meta: { page, limit, total } }, { status: 200, headers: corsHeaders(request) })
   } catch (err: unknown) {
-    console.error('GET /api/admin/orders error', err)
+    
     let status = 500
     let message = 'Server error'
     if (typeof err === 'object' && err !== null) {

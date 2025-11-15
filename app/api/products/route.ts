@@ -33,7 +33,7 @@ export async function GET(request: Request) {
     } catch {}
     return NextResponse.json({ products, meta: { page, limit, total } }, { status: 200, headers: corsHeaders(request) })
   } catch (err: unknown) {
-    console.error('GET /api/products error', err)
+    
     let status = 500
     let message = 'Server error'
     if (typeof err === 'object' && err !== null) {

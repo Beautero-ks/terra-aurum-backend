@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import prisma from '../../../prisma/client'
 import jwt from 'jsonwebtoken'
 
-const SECRET = process.env.JWT_SECRET || 'dev-secret'
+const SECRET = process.env.JWT_SECRET || '8e012340284be0f75d6e14bf068c06b6'
 
 export async function GET(request) {
   const users = await prisma.user.findMany()
