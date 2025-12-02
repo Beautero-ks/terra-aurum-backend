@@ -9,7 +9,12 @@ export async function DELETE(request: Request, context: { params: Promise<{ id: 
     const id = Number(resolved.id)
     if (Number.isNaN(id)) throw { status: 400, message: 'Invalid id' }
 
-    await prisma.order.delete({ where: { id } })
+    // Delete related order items first (foreign key constraint) then delete the order.
+    // Use a transaction for atomicity.
+    await prisma.$transaction([
+      prisma.orderItem.deleteMany({ where: { orderId: id } }),
+      prisma.order.delete({ where: { id } })
+    ])
     return NextResponse.json({ message: 'Deleted' }, { status: 200, headers: corsHeaders(request) })
   } catch (err: unknown) {
     console.error('DELETE /api/admin/orders/[id] error', err)
