@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '../../../lib/prisma.js'
+import { prisma } from '../../lib/prisma.js'
 import { corsHeaders, verifyAdmin } from '../_helpers'
 
 export async function GET(request: Request) {
