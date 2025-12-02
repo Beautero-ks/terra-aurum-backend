@@ -45,3 +45,32 @@ export async function PUT(
     );
   }
 }
+
+export async function DELETE(
+  request: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    await verifyAdmin(request)
+
+    const resolvedParams = await context.params
+    const id = Number(resolvedParams.id)
+    if (Number.isNaN(id)) throw { status: 400, message: 'Invalid id' }
+
+    await prisma.user.delete({ where: { id } })
+
+    return NextResponse.json({ message: 'Deleted' }, { status: 200, headers: corsHeaders(request) })
+  } catch (err: unknown) {
+    console.error('DELETE /api/admin/users/[id] error', err)
+    let status = 500
+    let message = 'Server error'
+    if (typeof err === 'object' && err !== null) {
+      const e = err as { status?: number; message?: string }
+      if (e.status) status = e.status
+      if (e.message) message = e.message
+    } else if (err instanceof Error) {
+      message = err.message
+    }
+    return NextResponse.json({ message }, { status, headers: corsHeaders(request) })
+  }
+}

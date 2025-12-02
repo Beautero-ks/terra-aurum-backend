@@ -28,7 +28,8 @@ export async function POST(request: Request) {
     const valid = await bcrypt.compare(password, user.password)
     if (!valid) return NextResponse.json({ message: 'Invalid password' }, { status: 401, headers: corsHeaders(request) })
 
-    const token = jwt.sign({ id: user.id, role: user.role }, SECRET, { expiresIn: '2h' })
+  // Increase token expiration to 24 hours
+  const token = jwt.sign({ id: user.id, role: user.role }, SECRET, { expiresIn: '24h' })
     return NextResponse.json({ token }, { status: 200, headers: corsHeaders(request) })
   } catch (err) {
     console.error('Login (app router) error', err)
