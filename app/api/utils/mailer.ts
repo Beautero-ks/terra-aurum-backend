@@ -1,21 +1,27 @@
 import nodemailer from 'nodemailer'
 
 export async function sendAdminMail(order: any) {
-  // Mail transport: expects ADMIN_EMAIL and ADMIN_EMAIL_PASSWORD in env
-  if (!process.env.ADMIN_EMAIL || !process.env.ADMIN_EMAIL_PASSWORD) {
-    console.warn('Admin email not configured (ADMIN_EMAIL / ADMIN_EMAIL_PASSWORD). Skipping sendAdminMail.')
+  // Mail transport: SendGrid configuration via environment variables
+  const mailHost = process.env.MAIL_HOST || 'smtp.sendgrid.net'
+  const mailPort = parseInt(process.env.MAIL_PORT || '587', 10)
+  const mailUser = process.env.MAIL_USER || 'apikey'
+  const mailPass = process.env.RENDER_MAILER_KEY
+  const mailFrom = process.env.MAIL_FROM
+
+  if (!mailPass || !mailFrom) {
+    console.warn('SendGrid email not configured (RENDER_MAILER_KEY / MAIL_FROM). Skipping sendAdminMail.')
     return
   }
 
   const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
+    host: mailHost,
+    port: mailPort,
+    secure: mailPort === 465, // Use TLS for port 587
     auth: {
-      user: process.env.ADMIN_EMAIL,
-      pass: process.env.ADMIN_EMAIL_PASSWORD
+      user: mailUser,
+      pass: mailPass
     },
-    connectionTimeout: 10000, // 10 secondes au lieu de 5
+    connectionTimeout: 10000,
     socketTimeout: 10000
   })
 
@@ -24,13 +30,11 @@ export async function sendAdminMail(order: any) {
     : JSON.stringify(order.items)
 
   const mailOptions = {
-    from: process.env.ADMIN_EMAIL,
-    to: process.env.ADMIN_EMAIL,
+    from: mailFrom,
+    to: mailFrom,
     subject: `Nouvelle commande ${order.orderNumber || order.id}`,
     text: `Nouvelle commande reçue :\n\nCommande : ${order.orderNumber || order.id}\nUtilisateur : ${order.userEmail || 'N/A'}\nTotal : ${order.total} $\nMode de paiement : ${order.paymentMethod || 'N/A'}\nNombre d'articles : ${Array.isArray(order.items) ? order.items.length : '-'}\nDate : ${order.date}\n\nArticles:\n${itemsSummary}\n\n--\nVoir le panneau d'administration pour plus de détails.`
   }
-
-  await transporter.sendMail(mailOptions)
 
   try {
     const info = await transporter.sendMail(mailOptions)
